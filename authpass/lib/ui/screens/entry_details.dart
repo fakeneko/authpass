@@ -1508,7 +1508,7 @@ class _EntryFieldState extends State<EntryField>
       PopupMenuItem(
         value: EntryAction.passwordGenerator,
         child: ListTile(
-          leading: const Icon(FontAwesomeIcons.shuffle),
+          leading: const FaIcon(FontAwesomeIcons.shuffle),
           title: Text(loc.generatePassword),
           //            subtitle: null,
         ),
@@ -1534,7 +1534,7 @@ class _EntryFieldState extends State<EntryField>
         value: EntryAction.show,
         child: ListTile(
           //                    leading: Icon(Icons.present_to_all),
-          leading: const Icon(FontAwesomeIcons.qrcode),
+          leading: const FaIcon(FontAwesomeIcons.qrcode),
           title: Text(loc.fieldPresent),
         ),
       ),
@@ -1958,7 +1958,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
           ),
         ),
         IconButton(
-          icon: const Icon(FontAwesomeIcons.eye),
+          icon: const FaIcon(FontAwesomeIcons.eye),
           color: color,
           tooltip: loc.entryFieldActionRevealField,
           onPressed: onShowPressed,

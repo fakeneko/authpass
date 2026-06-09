@@ -32,8 +32,10 @@ class GroupViewModel {
 
   bool get isRoot => group.parent == null;
 
-  IconData get icon => group.icon.get() != null
-      ? PredefinedIcons.iconForGroup(group.icon.get()!)
+  IconDataWrapperBase get icon => group.icon.get() != null
+      ? FaIconDataWrapper(
+          faIconData: PredefinedIcons.iconForGroup(group.icon.get()!),
+        )
       : kdbxBloc.fileForKdbxFile(file).fileSource.displayIcon.iconData;
 
   String? get nameOrNull =>
@@ -72,7 +74,7 @@ class GroupList extends StatelessWidget {
             ? null
             : <Widget>[
                 IconButton(
-                  icon: const Icon(FontAwesomeIcons.folderPlus),
+                  icon: const FaIcon(FontAwesomeIcons.folderPlus),
                   onPressed: () async {
                     final newName = await SimplePromptDialog(
                       title: loc.newGroupDialogTitle,
@@ -95,7 +97,7 @@ class GroupList extends StatelessWidget {
             itemBuilder: (context, index) {
               final group = rootGroups[index];
               return ListTile(
-                leading: Icon(group.icon),
+                leading: group.icon.widget(),
                 title: Text(group.name(loc)),
                 //                  trailing: IconButton(
                 //                    icon: Icon(FontAwesomeIcons.solidArrowAltCircleRight),
@@ -127,7 +129,7 @@ class GroupList extends StatelessWidget {
                             context,
                           ).pop(GroupListLongPressAction.filter),
                           child: ListTile(
-                            leading: const Icon(FontAwesomeIcons.filter),
+                            leading: const FaIcon(FontAwesomeIcons.filter),
                             title: Text(loc.groupActionShowPasswords),
                           ),
                         ),
@@ -210,8 +212,8 @@ class _GroupViewModel {
 
   bool get isRoot => group.parent == null;
 
-  IconData get icon => group.icon.get() != null
-      ? PredefinedIcons.iconForGroup(group.icon.get()!)
+  IconDataWrapperBase get icon => group.icon.get() != null
+      ? .faIconData(PredefinedIcons.iconForGroup(group.icon.get()!))
       : file.fileSource.displayIcon.iconData;
 
   String? get nameOrNull =>
@@ -659,7 +661,7 @@ class GroupListFlatList extends StatelessWidget {
                       onPressed: () =>
                           Navigator.of(context).pop(GroupAction.edit),
                       child: ListTile(
-                        leading: const Icon(FontAwesomeIcons.penToSquare),
+                        leading: const FaIcon(FontAwesomeIcons.penToSquare),
                         title: Text(loc.editAction),
                       ),
                     ),
@@ -965,8 +967,7 @@ class GroupListTile extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                 ) ??
-                Icon(
-                  group.icon,
+                group.icon.widget(
                   color: ThemeUtil.iconColor(theme, group.color),
                   size: 24,
                 ),

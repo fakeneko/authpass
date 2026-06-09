@@ -111,7 +111,7 @@ class _CloudStorageSelectorState extends State<CloudStorageSelector> {
                     widget.provider.logout();
                     setState(() {});
                   },
-                  icon: const Icon(FontAwesomeIcons.rightFromBracket),
+                  icon: const FaIcon(FontAwesomeIcons.rightFromBracket),
                 ),
               ],
       ),
@@ -273,7 +273,7 @@ class SearchResultListView extends StatelessWidget {
         }
         final entity = response.results[itemId]!;
         return ListTile(
-          leading: Icon(
+          leading: FaIcon(
             entity.type == CloudStorageEntityType.file
                 ? FontAwesomeIcons.file
                 : FontAwesomeIcons.folder,
@@ -419,14 +419,14 @@ class _CloudStorageBrowserState extends State<CloudStorageBrowser>
                   _folderBreadcrumbs.clear();
                   _listFolder();
                 },
-                icon: const Icon(FontAwesomeIcons.folderOpen),
+                icon: const FaIcon(FontAwesomeIcons.folderOpen),
                 label: const Text(CharConstants.slash),
               ),
               ..._folderBreadcrumbs.expand(
                 (f) => [
                   const Text(CharConstants.chevronRight),
                   TextButton.icon(
-                    icon: const Icon(FontAwesomeIcons.folderOpen),
+                    icon: const FaIcon(FontAwesomeIcons.folderOpen),
                     label: Text(f.name!),
                     onPressed: () {
                       _folderBreadcrumbs.removeRange(
@@ -487,7 +487,7 @@ class _CloudStorageBrowserState extends State<CloudStorageBrowser>
                   ),
                   const SizedBox(width: 8),
                   LinkButton(
-                    icon: const Icon(FontAwesomeIcons.floppyDisk),
+                    icon: const FaIcon(FontAwesomeIcons.floppyDisk),
                     onPressed: () {
                       Navigator.of(context).pop(
                         CloudStorageSelectorSaveResult(

@@ -140,7 +140,7 @@ class _PreferencesBodyState extends State<PreferencesBody>
             ? null
             : [
                 SwitchListTile(
-                  secondary: const Icon(FontAwesomeIcons.iCursor),
+                  secondary: const FaIcon(FontAwesomeIcons.iCursor),
                   title: Text(loc.preferenceEnableAutoFill),
                   subtitle: _autofillStatus == AutofillServiceStatus.unsupported
                       ? Text(loc.preferenceAutoFillDescription)
@@ -159,7 +159,7 @@ class _PreferencesBodyState extends State<PreferencesBody>
                         },
                 ),
                 SwitchListTile(
-                  secondary: const Icon(FontAwesomeIcons.bug),
+                  secondary: const FaIcon(FontAwesomeIcons.bug),
                   title: Text(loc.enableAutofillDebug),
                   subtitle: Text(loc.enableAutofillDebugSubtitle),
                   value: _autofillPrefs!.enableDebug,
@@ -191,7 +191,7 @@ class _PreferencesBodyState extends State<PreferencesBody>
                 ),
               ],
         ListTile(
-          leading: const Icon(
+          leading: const FaIcon(
             FontAwesomeIcons.lightbulb,
           ),
           title: Text(loc.preferenceTheme),
@@ -305,7 +305,7 @@ class _PreferencesBodyState extends State<PreferencesBody>
           tristate: false,
         ),
         CheckboxListTile(
-          secondary: const FaIcon(AuthPassIcons.AuthPassLogo),
+          secondary: const FaIcon(FaIconData(AuthPassIcons.AuthPassLogo)),
           value:
               appData.authPassCloudAttachments ??
               appData.authPassCloudAttachmentsOrDefault,
@@ -612,7 +612,7 @@ class PreferencesOverflowMenuAction extends HookWidget {
                 await SelectFileScreen.navigate(context);
               },
               child: ListTile(
-                leading: const Icon(FontAwesomeIcons.bug),
+                leading: const FaIcon(FontAwesomeIcons.bug),
                 title: Text(loc.clearQuickUnlock),
                 subtitle: Text(loc.clearQuickUnlockSubtitle),
               ),
@@ -631,7 +631,7 @@ class PreferencesOverflowMenuAction extends HookWidget {
                 ).pushAndRemoveUntil(LockedScreen.route(), (_) => false);
               },
               child: ListTile(
-                leading: const Icon(FontAwesomeIcons.rightFromBracket),
+                leading: const FaIcon(FontAwesomeIcons.rightFromBracket),
                 title: Text(loc.lockAllFiles),
               ),
             ),

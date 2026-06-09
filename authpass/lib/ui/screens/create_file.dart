@@ -82,7 +82,7 @@ class _CreateFileState extends State<CreateFile> with FutureTaskStateMixin {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(target.provider.displayIcon.iconData),
+                      target.provider.displayIcon.iconData.widget(),
                       const SizedBox(width: 16),
                       Text(target.provider.displayName),
                       ...?target.parent?.let(

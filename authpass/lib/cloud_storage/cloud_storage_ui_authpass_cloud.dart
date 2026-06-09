@@ -427,7 +427,7 @@ class _ShareCodeInputDialogState extends State<ShareCodeInputDialog>
               children: <Widget>[
                 IconButton(
                   tooltip: loc.promptDialogPasteActionTooltip,
-                  icon: const Icon(FontAwesomeIcons.paste),
+                  icon: const FaIcon(FontAwesomeIcons.paste),
                   onPressed: () async {
                     final text = await getClipboardText();
                     if (text != null) {

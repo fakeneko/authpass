@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kdbx/kdbx.dart';
 
 class PredefinedIcons {
-  static const icons = <IconData>[
+  static const icons = <FaIconData>[
     FontAwesomeIcons.key,
     FontAwesomeIcons.earthEurope,
     FontAwesomeIcons.circleExclamation,
@@ -76,11 +74,11 @@ class PredefinedIcons {
     FontAwesomeIcons.mobile,
   ];
 
-  static IconData iconFor(KdbxIcon icon) {
+  static FaIconData iconFor(KdbxIcon icon) {
     return icons[icon.index]; // ?? FontAwesomeIcons.users;
   }
 
-  static IconData iconForGroup(KdbxIcon icon) {
+  static FaIconData iconForGroup(KdbxIcon icon) {
     return icons[icon.index]; // ?? FontAwesomeIcons.folder;
   }
 }

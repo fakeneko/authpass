@@ -88,8 +88,14 @@ class AuthPassAboutDialog extends StatelessWidget {
                     data: snapshot.requireData,
                     imageBuilder: (uri, title, alt) {
                       final icon = _contributorsImageMapping[alt];
-                      if (icon != null) {
+                      if (icon is FaIconData) {
                         return FaIcon(
+                          icon,
+                          size: 12,
+                          color: theme.textTheme.bodyLarge!.color,
+                        );
+                      } else if (icon is IconData) {
+                        return Icon(
                           icon,
                           size: 12,
                           color: theme.textTheme.bodyLarge!.color,

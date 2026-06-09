@@ -43,7 +43,7 @@ class AppBarMenu {
         },
         child: ListTile(
           key: const ValueKey('openPasswordGenerator'),
-          leading: const Icon(FontAwesomeIcons.shuffle),
+          leading: const FaIcon(FontAwesomeIcons.shuffle),
           title: Text(loc.menuItemGeneratePassword),
         ),
       ),
@@ -53,7 +53,7 @@ class AppBarMenu {
           Navigator.of(context).push(PreferencesScreen.route());
         },
         child: ListTile(
-          leading: const Icon(FontAwesomeIcons.gears),
+          leading: const FaIcon(FontAwesomeIcons.gears),
           title: Text(loc.menuItemPreferences),
         ),
       ),
@@ -72,8 +72,7 @@ class AppBarMenu {
                     ).push(ManageFileScreen.route(file.fileSource));
                   },
                   child: ListTile(
-                    leading: Icon(
-                      file.fileSource.displayIcon.iconData,
+                    leading: file.fileSource.displayIcon.iconData.widget(
                       color: file.openedFile.color,
                     ),
                     title: Text(file.fileSource.displayName),
@@ -98,7 +97,7 @@ class AppBarMenu {
           },
           child: ListTile(
             key: const ValueKey('openAnotherFile'),
-            leading: const Icon(FontAwesomeIcons.folderPlus),
+            leading: const FaIcon(FontAwesomeIcons.folderPlus),
             title: Text(loc.menuItemOpenAnotherFile),
           ),
         ),

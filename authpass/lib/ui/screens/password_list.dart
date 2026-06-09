@@ -726,7 +726,7 @@ class _PasswordListContentState extends State<PasswordListContent>
         //          },
         //        ),
         PopupMenuButton<VoidCallback>(
-          icon: const Icon(FontAwesomeIcons.filter),
+          icon: const FaIcon(FontAwesomeIcons.filter),
           tooltip: loc.filterButtonLabel,
           onSelected: (value) async {
             value();
@@ -1271,7 +1271,7 @@ class _PasswordListContentState extends State<PasswordListContent>
                     .map(
                       (file) => SpeedDialChild(
                         label: file.fileSource.displayName,
-                        child: Icon(file.fileSource.displayIcon.iconData),
+                        child: file.fileSource.displayIcon.iconData.widget(),
                         labelBackgroundColor: Theme.of(context).cardColor,
                         backgroundColor: file.openedFile.colorCode == null
                             ? null
@@ -1880,7 +1880,7 @@ class EntryIcon extends StatelessWidget {
             fit: BoxFit.contain,
           ),
         ) ??
-        Icon(
+        FaIcon(
           PredefinedIcons.iconFor(entry.icon.get()!),
           color: fgColor ?? ThemeUtil.iconColor(theme, fileColor),
           size: size,

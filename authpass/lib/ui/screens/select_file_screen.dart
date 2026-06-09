@@ -416,21 +416,21 @@ class _SelectFileWidgetState extends State<SelectFileWidget>
                           (cs) => PopupMenuItem<Object>(
                             value: cs,
                             child: ListTile(
-                              leading: Icon(cs.displayIcon.iconData),
+                              leading: cs.displayIcon.iconData.widget(),
                               title: Text(loc.loadFrom(cs.displayName)),
                             ),
                           ),
                         ),
                       ],
                       child: SelectFileActionContent(
-                        icon: FontAwesomeIcons.folderOpen,
+                        icon: .faIconData(FontAwesomeIcons.folderOpen),
                         label: loc.loadFromDropdownMenu,
                       ),
                       // icon: const FaIcon(FontAwesomeIcons.folderOpen),
                     ),
                   ),
                   SelectFileAction(
-                    icon: Icons.create_new_folder,
+                    icon: .iconData(Icons.create_new_folder),
                     label: loc.createNewFile,
                     backgroundColor: theme.primaryColor.darken(),
                     onPressed: () {
@@ -762,8 +762,7 @@ class OpenedFileTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           //        crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            FaIcon(
-              openedFile.displayIcon.iconData,
+            openedFile.displayIcon.iconData.widget(
               color: ThemeUtil.iconColor(theme, color),
             ),
             const SizedBox(width: 8),
@@ -838,7 +837,7 @@ class SelectFileAction extends StatelessWidget {
     this.backgroundColor,
   });
 
-  final IconData icon;
+  final IconDataWrapperBase icon;
   final String label;
   final Color? backgroundColor;
   final VoidCallback onPressed;
@@ -862,7 +861,7 @@ class SelectFileActionContent extends StatelessWidget {
     required this.label,
   });
 
-  final IconData icon;
+  final IconDataWrapperBase icon;
   final String label;
 
   @override
@@ -876,8 +875,7 @@ class SelectFileActionContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              icon,
+            icon.widget(
               color: theme.primaryTextTheme.bodyMedium!.color!.withValues(
                 alpha: 0.8,
               ),
@@ -1119,7 +1117,7 @@ class _CredentialsScreenState extends State<CredentialsScreen> {
                 padding: const EdgeInsets.only(right: 32, left: 32),
                 child: TextButton.icon(
                   //                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  icon: Icon(
+                  icon: FaIcon(
                     _keyFile == null
                         ? FontAwesomeIcons.folderOpen
                         : FontAwesomeIcons.penToSquare,

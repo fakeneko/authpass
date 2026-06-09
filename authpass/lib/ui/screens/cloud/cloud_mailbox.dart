@@ -99,11 +99,11 @@ class _CloudMailboxTabScreenState extends State<CloudMailboxTabScreen>
           tabs: [
             Tab(
               text: loc.mailTabBarTitleMailbox,
-              icon: const Icon(FontAwesomeIcons.boxOpen),
+              icon: const FaIcon(FontAwesomeIcons.boxOpen),
             ),
             Tab(
               text: loc.mailTabBarTitleMail,
-              icon: const Icon(FontAwesomeIcons.envelopesBulk),
+              icon: const FaIcon(FontAwesomeIcons.envelopesBulk),
             ),
           ],
         ),
@@ -171,7 +171,7 @@ class CloudMailboxList extends StatelessWidget {
                 mailbox,
               );
               return ListTile(
-                leading: Icon(
+                leading: FaIcon(
                   vm.icon,
                   color: mailbox.isDisabled ? Colors.black12 : null,
                 ),
@@ -210,7 +210,7 @@ class CloudMailboxList extends StatelessWidget {
                         ),
                         mailbox.isDisabled
                             ? ListTile(
-                                leading: const Icon(
+                                leading: const FaIcon(
                                   FontAwesomeIcons.volumeHigh,
                                 ),
                                 title: Text(loc.mailboxEnableLabel),
@@ -224,7 +224,7 @@ class CloudMailboxList extends StatelessWidget {
                                 },
                               )
                             : ListTile(
-                                leading: const Icon(
+                                leading: const FaIcon(
                                   FontAwesomeIcons.volumeXmark,
                                 ),
                                 title: Text(loc.mailboxDisableLabel),
@@ -291,7 +291,7 @@ class CloudMailboxList extends StatelessWidget {
 class MailboxViewModel {
   MailboxViewModel(this.icon, this.label);
 
-  final IconData icon;
+  final FaIconData icon;
   final String label;
 }
 
@@ -368,11 +368,11 @@ class MailListTile extends StatelessWidget {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: message.isRead
-                  ? Icon(
+                  ? FaIcon(
                       FontAwesomeIcons.envelopeOpen,
                       color: ThemeUtil.iconColor(theme, null),
                     )
-                  : Icon(
+                  : FaIcon(
                       FontAwesomeIcons.envelope,
                       color: theme.primaryColor,
                     ),

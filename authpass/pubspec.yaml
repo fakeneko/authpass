@@ -90,7 +90,7 @@ dependencies:
   biometric_storage: ^5.1.1-dev.1
   uuid: ^4.3.3
   url_launcher: ^6.0.2
-  font_awesome_flutter: ^10.1.0
+  font_awesome_flutter: ^11.0.0
   otp: ^3.0.0-nullsafety.0
   otpauth_migration: #^0.0.7
     git:

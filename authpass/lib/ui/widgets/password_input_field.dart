@@ -55,8 +55,8 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
         labelText: widget.labelText,
         suffixIcon: IconButton(
           icon: _obscureText
-              ? const Icon(FontAwesomeIcons.eye)
-              : const Icon(FontAwesomeIcons.eyeSlash),
+              ? const FaIcon(FontAwesomeIcons.eye)
+              : const FaIcon(FontAwesomeIcons.eyeSlash),
           onPressed: () {
             setState(() {
               _obscureText = !_obscureText;

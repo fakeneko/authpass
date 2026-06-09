@@ -31,7 +31,7 @@ class CloudStorageAuthentication extends StatelessWidget {
     final theme = Theme.of(context);
     final provider = this.provider;
     final defaultLoginWidget = PrimaryButton(
-      icon: const Icon(FontAwesomeIcons.rightToBracket),
+      icon: const FaIcon(FontAwesomeIcons.rightToBracket),
       onPressed: () async {
         await _startLoginFlow(context);
       },

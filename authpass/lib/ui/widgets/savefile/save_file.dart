@@ -52,7 +52,7 @@ class _SaveFileAsState extends State<SaveFileAs> with FutureTaskStateMixin {
   Widget build(BuildContext context) {
     final kdbxBloc = context.watch<KdbxBloc>();
     return ListTile(
-      leading: widget.icon ?? Icon(widget.cs!.displayIcon.iconData),
+      leading: widget.icon ?? widget.cs!.displayIcon.iconData.widget(),
       title: Text(widget.title),
       subtitle: Text(widget.subtitle ?? widget.cs!.displayName),
       onTap: () async {

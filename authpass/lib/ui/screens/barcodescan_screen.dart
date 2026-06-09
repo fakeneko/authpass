@@ -62,9 +62,15 @@ class BarcodeScanHelper {
         scanner.BarcodeFormat.code128 => BarcodeFormat.code128,
         scanner.BarcodeFormat.dataMatrix => BarcodeFormat.dataMatrix,
         scanner.BarcodeFormat.itf => BarcodeFormat.itf,
+        scanner.BarcodeFormat.itf14 => BarcodeFormat.itf,
         scanner.BarcodeFormat.upcE => BarcodeFormat.upce,
+        scanner.BarcodeFormat.upcA => .upca,
         scanner.BarcodeFormat.pdf417 => BarcodeFormat.pdf417,
-        _ => BarcodeFormat.unknown,
+        // _ => BarcodeFormat.unknown,
+        // TODO: Handle this case.
+        scanner.BarcodeFormat.unknown || .all || .codabar => .unknown,
+        scanner.BarcodeFormat.itf2of5 => .unknown,
+        scanner.BarcodeFormat.itf2of5WithChecksum => .unknown,
       };
 
   // static final _barcodeMapping = Map.fromEntries(barcode.BarcodeFormat.values
@@ -364,8 +370,7 @@ enum BarcodeFormat {
   qrCode(),
   upca(),
   upce(),
-  microQRCode()
-  ;
+  microQRCode();
 
   const BarcodeFormat();
 

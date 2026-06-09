@@ -102,8 +102,8 @@ class _EmailReadScreenState extends State<EmailReadScreen> {
               if (hasText && hasHtml) ...[
                 IconButton(
                   icon: _forcePlainText
-                      ? const Icon(FontAwesomeIcons.html5)
-                      : const Icon(FontAwesomeIcons.textSlash),
+                      ? const FaIcon(FontAwesomeIcons.html5)
+                      : const FaIcon(FontAwesomeIcons.textSlash),
                   onPressed: () {
                     setState(() {
                       _forcePlainText = !_forcePlainText;
@@ -131,7 +131,7 @@ class _EmailReadScreenState extends State<EmailReadScreen> {
                             _logger.fine('finished opening $result');
                           },
                           child: ListTile(
-                            leading: Icon(_iconFor(a)),
+                            leading: FaIcon(_iconFor(a)),
                             title: Text(a.fileName!),
                           ),
                         ),
@@ -174,7 +174,7 @@ class _EmailReadScreenState extends State<EmailReadScreen> {
     );
   }
 
-  IconData _iconFor(ContentInfo a) {
+  FaIconData _iconFor(ContentInfo a) {
     if (a.contentType!.mediaType.sub == MediaSubtype.applicationPdf) {
       return FontAwesomeIcons.filePdf;
     }

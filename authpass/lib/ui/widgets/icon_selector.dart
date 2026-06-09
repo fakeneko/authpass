@@ -116,7 +116,7 @@ class _IconSelectorState extends State<IconSelector> {
             onTap: () {
               _readFile();
             },
-            child: const Icon(FontAwesomeIcons.plus),
+            child: const FaIcon(FontAwesomeIcons.plus),
           ),
           ..._kdbxFile!.body.meta.customIcons.values.map(
             (value) => IconSelectorCustomIcon(
@@ -218,7 +218,7 @@ class IconSelectorIcon extends StatelessWidget {
     this.onTap,
   });
 
-  final IconData? iconData;
+  final FaIconData? iconData;
   final bool? isSelected;
   final VoidCallback? onTap;
 
@@ -229,7 +229,7 @@ class IconSelectorIcon extends StatelessWidget {
       color: isSelected! ? theme.primaryColorLight : null,
       child: InkWell(
         onTap: onTap,
-        child: Icon(iconData, color: isSelected! ? null : theme.primaryColor),
+        child: FaIcon(iconData, color: isSelected! ? null : theme.primaryColor),
       ),
     );
   }
@@ -329,7 +329,7 @@ class IconSelectorFormField extends StatelessWidget {
                   alignment: Alignment.center,
                   child: value.map(
                     predefined: (predefined) => CenteredIcon(
-                      icon: PredefinedIcons.iconFor(predefined.icon),
+                      icon: PredefinedIcons.iconFor(predefined.icon).data,
                       size: iconSize,
                       color: theme.primaryColor,
                     ),
