@@ -27,7 +27,6 @@ elif test "${1:-}" == "windows" ; then
     if ! test -z "${BLACKBOX_SECRET:-}" ; then
         echo "$BLACKBOX_SECRET" | ${DEPS}/blackbox.go.windows.amd64.exe cipostdeploy
     fi
-    popd
 
 #    pushd ${DEPS}
 #    git clone https://github.com/flutter/flutter.git
