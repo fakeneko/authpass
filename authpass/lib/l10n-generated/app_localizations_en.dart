@@ -269,6 +269,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menuItemAbout => 'About';
 
   @override
+  String get menuItemTotpList => 'TOTP Codes';
+
+  @override
+  String get totpListTitle => 'TOTP Codes';
+
+  @override
+  String get totpListNoFilesOpen => 'No password files open.';
+
+  @override
+  String get totpListEmpty => 'No TOTP entries found.';
+
+  @override
+  String get totpListCopyCode => 'Copy code';
+
+  @override
+  String totpListCodeCopied(String code) => 'Copied $code';
+
+  @override
   String get actionOpenUrl => 'Open URL';
 
   @override

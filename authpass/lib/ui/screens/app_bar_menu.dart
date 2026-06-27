@@ -6,7 +6,7 @@ import 'package:authpass/l10n-generated/app_localizations.dart';
 import 'package:authpass/ui/screens/about.dart';
 import 'package:authpass/ui/screens/manage_file.dart';
 import 'package:authpass/ui/screens/password_generator.dart';
-import 'package:authpass/ui/screens/preferences.dart';
+import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/select_file_screen.dart';
 import 'package:authpass/utils/dialog_utils.dart';
 import 'package:authpass/utils/logging_utils.dart';
@@ -99,6 +99,20 @@ class AppBarMenu {
             key: const ValueKey('openAnotherFile'),
             leading: const FaIcon(FontAwesomeIcons.folderPlus),
             title: Text(loc.menuItemOpenAnotherFile),
+          ),
+        ),
+        PopupMenuItem(
+          value: () {
+            analytics.events.trackActionPressed(action: 'totpList');
+            Navigator.of(
+              context,
+              rootNavigator: true,
+            ).push(TotpListScreen.route());
+          },
+          child: ListTile(
+            key: const ValueKey('openTotpList'),
+            leading: const FaIcon(FontAwesomeIcons.clock),
+            title: Text(loc.menuItemTotpList),
           ),
         ),
       ],

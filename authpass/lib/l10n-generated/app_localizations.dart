@@ -616,6 +616,42 @@ abstract class AppLocalizations {
   /// **'About'**
   String get menuItemAbout;
 
+  /// No description provided for @menuItemTotpList.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTP Codes'**
+  String get menuItemTotpList;
+
+  /// No description provided for @totpListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTP Codes'**
+  String get totpListTitle;
+
+  /// No description provided for @totpListNoFilesOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'No password files open.'**
+  String get totpListNoFilesOpen;
+
+  /// No description provided for @totpListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No TOTP entries found.'**
+  String get totpListEmpty;
+
+  /// No description provided for @totpListCopyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get totpListCopyCode;
+
+  /// No description provided for @totpListCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied {code}'**
+  String totpListCodeCopied(String code);
+
   /// tooltip for button to open URL/Website of an entry.
   ///
   /// In en, this message translates to:
