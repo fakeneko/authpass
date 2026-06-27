@@ -16,17 +16,21 @@ cd ${root}
 if test -f _tools/secrets/gradle_home/gradle.properties ; then
     echo "blackbox was already decrypted."
 else
-    # Try different blackbox paths for different platforms
-    if test -f "${DEPS}/blackbox/bin/blackbox_postdeploy"; then
-        ${DEPS}/blackbox/bin/blackbox_postdeploy
-    elif test -f "${DEPS}/blackbox.go.windows.amd64.exe"; then
-        echo "${BLACKBOX_SECRET:-}" | ${DEPS}/blackbox.go.windows.amd64.exe cipostdeploy
-    elif test -f "${DEPS}/blackbox.go.macos"; then
-        echo "${BLACKBOX_SECRET:-}" | ${DEPS}/blackbox.go.macos cipostdeploy
-    elif test -f "${DEPS}/blackbox.go.linux.amd64"; then
-        echo "${BLACKBOX_SECRET:-}" | ${DEPS}/blackbox.go.linux.amd64 cipostdeploy
+    if test -z "${BLACKBOX_SECRET:-}" ; then
+        echo "Warning: BLACKBOX_SECRET not set, skipping blackbox postdeploy"
     else
-        echo "Warning: blackbox not found, skipping postdeploy"
+        # Try different blackbox paths for different platforms
+        if test -f "${DEPS}/blackbox/bin/blackbox_postdeploy"; then
+            ${DEPS}/blackbox/bin/blackbox_postdeploy
+        elif test -f "${DEPS}/blackbox.go.windows.amd64.exe"; then
+            echo "${BLACKBOX_SECRET}" | ${DEPS}/blackbox.go.windows.amd64.exe cipostdeploy
+        elif test -f "${DEPS}/blackbox.go.macos"; then
+            echo "${BLACKBOX_SECRET}" | ${DEPS}/blackbox.go.macos cipostdeploy
+        elif test -f "${DEPS}/blackbox.go.linux.amd64"; then
+            echo "${BLACKBOX_SECRET}" | ${DEPS}/blackbox.go.linux.amd64 cipostdeploy
+        else
+            echo "Warning: blackbox not found, skipping postdeploy"
+        fi
     fi
 fi
 
