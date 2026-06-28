@@ -66,6 +66,7 @@ jobs:
         GIT_COMMITTER_EMAIL: 'herbert.github.ci@codeux.design'
       run: |
         export JAVA_HOME="$JAVA_HOME_17_X64"
+        export PATH="$HOME/deps/flutter/bin:$PATH"
         cd authpass
         flutter build apk -t lib/env/development.dart --release --flavor sideload
         echo "::set-output name=outputfilename::authpass-sideload.apk"
