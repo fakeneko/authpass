@@ -14,7 +14,7 @@ import 'package:authpass/ui/common_fields.dart';
 import 'package:authpass/ui/screens/app_bar_menu.dart';
 import 'package:authpass/ui/screens/cloud/cloud_auth.dart';
 import 'package:authpass/ui/screens/cloud/cloud_mailbox.dart';
-import 'package:authpass/ui/screens/entry_details.dart';
+import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/group_list.dart';
 import 'package:authpass/ui/screens/locked_screen.dart';
 import 'package:authpass/ui/screens/password_list_drawer.dart';
@@ -477,6 +477,7 @@ class _PasswordListContentState extends State<PasswordListContent>
 
   AutofillServiceStatus? _autofillStatus;
   bool? _dismissedAutofillSuggestion;
+  int _currentBottomNavIndex = 0;
 
   @override
   void initState() {
@@ -1291,6 +1292,27 @@ class _PasswordListContentState extends State<PasswordListContent>
                     .toList(),
                 child: Icon(_speedDialOpen ? Icons.close : Icons.add),
               ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentBottomNavIndex,
+          onTap: (index) {
+            setState(() {
+              _currentBottomNavIndex = index;
+            });
+            if (index == 1) {
+              Navigator.of(context).push(TotpListScreen.route());
+            }
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.home),
+              label: loc.passwordListTitle,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.watch_later),
+              label: loc.totpListTitle,
+            ),
+          ],
+        ),
       ),
     );
   }
