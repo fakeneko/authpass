@@ -12,6 +12,35 @@
   "@fieldTotp": {
     "description": "Label for fields of TOTP (Time based one time passwords)"
   },
+  "totpListTitle": "TOTP Codes",
+  "@totpListTitle": {
+    "description": "Title for the TOTP list screen"
+  },
+  "totpListNoFilesOpen": "No password files open.",
+  "@totpListNoFilesOpen": {
+    "description": "Message shown when no password files are open in TOTP list"
+  },
+  "totpListEmpty": "No TOTP entries found.",
+  "@totpListEmpty": {
+    "description": "Message shown when no TOTP entries exist"
+  },
+  "totpListCopyCode": "Copy code",
+  "@totpListCopyCode": {
+    "description": "Tooltip for copy TOTP code button"
+  },
+  "totpListCodeCopied": "Copied {code}",
+  "@totpListCodeCopied": {
+    "description": "Message shown after TOTP code is copied to clipboard",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "menuItemTotpList": "TOTP Codes",
+  "@menuItemTotpList": {
+    "description": "Menu item label for TOTP list screen"
+  },
   "english": "English",
   "@english": {
     "description": "language switcher subtitle"
