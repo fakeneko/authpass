@@ -95,47 +95,39 @@ android {
 
     productFlavors {
         samsungapps {
-            // Assigns this product flavor to the "version" flavor dimension.
-            // If you are using only one dimension, this property is optional,
-            // and the plugin automatically assigns all the module's flavors to
-            // that dimension.
             dimension "hpdist"
             applicationIdSuffix ".samsungapps"
-//            minSdkVersion 23
-//            targetSdkVersion 29
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         huawei {
             dimension "hpdist"
             applicationIdSuffix ".huawei"
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         amazon {
             dimension "hpdist"
             applicationIdSuffix ".amazon"
-            signingConfig signingConfigs.amazon
+            signingConfig signingConfigs.debug
         }
         playstore {
             dimension "hpdist"
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         playstoredev {
             dimension "hpdist"
             applicationIdSuffix ".dev"
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         fdroid {
             dimension "hpdist"
             project.flutter.target = 'lib/env/fdroid.dart'
             applicationIdSuffix = '.fdroid'
-            // https://issuetracker.google.com/issues/197430188
             signingConfig?.setConfig(null)
         }
         // Binary distribution for direct release through github.
         sideload {
             dimension "hpdist"
             applicationIdSuffix = '.sideload'
-            // Use debug signing config when release keystore is not available
             signingConfig signingConfigs.debug
         }
 
