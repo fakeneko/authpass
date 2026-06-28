@@ -21,21 +21,6 @@ jobs:
     strategy:
       matrix:
         flavor: ['sideload']
-        shouldRelease:
-          - ${{ contains(github.ref, 'stable') || startsWith(github.ref, 'refs/heads/v') }}
-        isMain:
-          - ${{ contains(github.ref, 'main') }}
-        exclude:
-          - shouldRelease: false
-            flavor: amazon
-          - shouldRelease: false
-            flavor: huawei
-          - shouldRelease: false
-            flavor: samsungapps
-          - shouldRelease: false
-            flavor: playstore
-
-
       fail-fast: true
 
     steps:
