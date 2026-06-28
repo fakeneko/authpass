@@ -3,6 +3,7 @@ name: build android
 on:
   push:
     branches:
+      - 'android**'
       - main
       - stable
       - beta
