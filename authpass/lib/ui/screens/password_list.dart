@@ -14,6 +14,7 @@ import 'package:authpass/ui/common_fields.dart';
 import 'package:authpass/ui/screens/app_bar_menu.dart';
 import 'package:authpass/ui/screens/cloud/cloud_auth.dart';
 import 'package:authpass/ui/screens/cloud/cloud_mailbox.dart';
+import 'package:authpass/ui/screens/entry_details.dart';
 import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/group_list.dart';
 import 'package:authpass/ui/screens/locked_screen.dart';
@@ -1305,7 +1306,7 @@ class _PasswordListContentState extends State<PasswordListContent>
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.home),
-              label: loc.passwordListTitle,
+              label: loc.appName,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.watch_later),
