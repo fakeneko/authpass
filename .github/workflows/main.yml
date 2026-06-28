@@ -72,6 +72,11 @@ jobs:
         # Find the actual APK file
         apk_file=$(find build/app/outputs -name "*.apk" | head -1)
         echo "Found APK: $apk_file"
+        # Generate debug keystore if not exists
+        if [ ! -f ~/.android/debug.keystore ]; then
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        fi
         # Sign the APK with debug keystore
         $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign \
           --ks ~/.android/debug.keystore \
