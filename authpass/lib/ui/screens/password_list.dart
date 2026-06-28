@@ -1306,7 +1306,7 @@ class _PasswordListContentState extends State<PasswordListContent>
           items: [
             BottomNavigationBarItem(
               icon: const Icon(Icons.home),
-              label: loc.appName,
+              label: loc.aboutAppName,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.watch_later),
