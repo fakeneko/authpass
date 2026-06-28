@@ -87,26 +87,21 @@ android {
         samsungapps {
             dimension "hpdist"
             applicationIdSuffix ".samsungapps"
-            signingConfig signingConfigs.debug
         }
         huawei {
             dimension "hpdist"
             applicationIdSuffix ".huawei"
-            signingConfig signingConfigs.debug
         }
         amazon {
             dimension "hpdist"
             applicationIdSuffix ".amazon"
-            signingConfig signingConfigs.debug
         }
         playstore {
             dimension "hpdist"
-            signingConfig signingConfigs.debug
         }
         playstoredev {
             dimension "hpdist"
             applicationIdSuffix ".dev"
-            signingConfig signingConfigs.debug
         }
         fdroid {
             dimension "hpdist"
@@ -118,7 +113,6 @@ android {
         sideload {
             dimension "hpdist"
             applicationIdSuffix = '.sideload'
-            signingConfig signingConfigs.debug
         }
 
     }
