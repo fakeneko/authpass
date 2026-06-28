@@ -64,13 +64,19 @@ android {
         release {
             keyAlias 'authpass'
             keyPassword secretProperties['design.codeux.authpass.storePassword']
-            storeFile file(secretProperties['design.codeux.authpass.storeFile'] ?: "invalid")
+            def storeFilePath = secretProperties['design.codeux.authpass.storeFile']
+            if (storeFilePath != null) {
+                storeFile file(storeFilePath)
+            }
             storePassword secretProperties['design.codeux.authpass.storePassword']
         }
         amazon {
             keyAlias 'amazon-key'
             keyPassword secretProperties['design.codeux.authpass.amazon.storePassword']
-            storeFile file(secretProperties['design.codeux.authpass.amazon.storeFile'] ?: "invalid")
+            def storeFilePath = secretProperties['design.codeux.authpass.amazon.storeFile']
+            if (storeFilePath != null) {
+                storeFile file(storeFilePath)
+            }
             storePassword secretProperties['design.codeux.authpass.amazon.storePassword']
         }
     }
