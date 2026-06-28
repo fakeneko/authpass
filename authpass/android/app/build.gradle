@@ -62,32 +62,16 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'authpass'
-            keyPassword secretProperties['design.codeux.authpass.storePassword']
-            def storeFilePath = secretProperties['design.codeux.authpass.storeFile']
-            if (storeFilePath != null && file(storeFilePath).exists()) {
-                storeFile file(storeFilePath)
-            } else {
-                // Fallback to debug signing when release keystore is not available
-                storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
-                keyPassword 'android'
-                storePassword 'android'
-            }
-            storePassword secretProperties['design.codeux.authpass.storePassword']
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword 'android'
         }
         amazon {
-            keyAlias 'amazon-key'
-            keyPassword secretProperties['design.codeux.authpass.amazon.storePassword']
-            def storeFilePath = secretProperties['design.codeux.authpass.amazon.storeFile']
-            if (storeFilePath != null && file(storeFilePath).exists()) {
-                storeFile file(storeFilePath)
-            } else {
-                // Fallback to debug signing when amazon keystore is not available
-                storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
-                keyPassword 'android'
-                storePassword 'android'
-            }
-            storePassword secretProperties['design.codeux.authpass.amazon.storePassword']
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file("${System.getProperty('user.home')}/.android/debug.keystore")
+            storePassword 'android'
         }
     }
 
