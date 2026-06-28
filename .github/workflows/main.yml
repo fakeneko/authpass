@@ -50,7 +50,12 @@ jobs:
     - name: Postdeploy
       env:
         BLACKBOX_SECRET: ${{ secrets.BLACKBOX_SECRET_KEY }}
-      run: authpass/_tools/postdeploy.sh
+      run: |
+        if [ -n "${{ secrets.BLACKBOX_SECRET_KEY }}" ]; then
+          authpass/_tools/postdeploy.sh
+        else
+          echo "BLACKBOX_SECRET not set, skipping postdeploy"
+        fi
     - name: debug android directory
       run: echo "${ANDROID_SDK_ROOT} , ${ANDROID_HOME}" , Running in ${{ github.ref }}
     - uses: ruby/setup-ruby@v1
@@ -78,9 +83,10 @@ jobs:
       run: |
         export JAVA_HOME="$JAVA_HOME_17_X64"
         ./authpass/_tools/ci-release.sh android ${{ matrix.flavor }}
-    - name: upload artifact
-      if: ${{ steps.buildapk.outputs.outputfilename != null }}
-      run: ./authpass/_tools/upload-artifact.sh authpass/${{ steps.buildapk.outputs.outputpath }}
+    # upload artifact to authpass server requires artifact_token.txt (encrypted)
+    # - name: upload artifact
+    #   if: ${{ steps.buildapk.outputs.outputfilename != null }}
+    #   run: ./authpass/_tools/upload-artifact.sh authpass/${{ steps.buildapk.outputs.outputpath }}
     - uses: actions/upload-artifact@v4
       if: ${{ steps.buildapk.outputs.outputfilename != null }}
       with:
