@@ -72,8 +72,16 @@ jobs:
         # Find the actual APK file
         apk_file=$(find build/app/outputs -name "*.apk" | head -1)
         echo "Found APK: $apk_file"
+        # Sign the APK with debug keystore
+        $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign \
+          --ks ~/.android/debug.keystore \
+          --ks-key-alias androiddebugkey \
+          --ks-pass pass:android \
+          --key-pass pass:android \
+          --in "$apk_file" \
+          --out build/app/outputs/apk/sideload/release/app-sideload-signed.apk
         echo "::set-output name=outputfilename::authpass-sideload.apk"
-        echo "::set-output name=outputpath::$apk_file"
+        echo "::set-output name=outputpath::build/app/outputs/apk/sideload/release/app-sideload-signed.apk"
     - uses: actions/upload-artifact@v4
       if: ${{ steps.buildapk.outputs.outputfilename != null }}
       with:
