@@ -119,8 +119,8 @@ android {
         sideload {
             dimension "hpdist"
             applicationIdSuffix = '.sideload'
-            signingConfig signingConfigs.release
-            
+            // Use debug signing config when release keystore is not available
+            signingConfig signingConfigs.debug
         }
 
     }

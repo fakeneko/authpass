@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        flavor: ['playstore', 'playstoredev', 'samsungapps', 'sideload', 'huawei', 'amazon']
+        flavor: ['sideload']
         shouldRelease:
           - ${{ contains(github.ref, 'stable') || startsWith(github.ref, 'refs/heads/v') }}
         isMain:
