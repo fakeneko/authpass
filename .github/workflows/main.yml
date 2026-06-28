@@ -69,12 +69,11 @@ jobs:
         export PATH="$HOME/deps/flutter/bin:$PATH"
         cd authpass
         flutter build apk -t lib/env/development.dart --release --flavor sideload
+        # Find the actual APK file
+        apk_file=$(find build/app/outputs -name "*.apk" | head -1)
+        echo "Found APK: $apk_file"
         echo "::set-output name=outputfilename::authpass-sideload.apk"
-        echo "::set-output name=outputpath::build/app/outputs/apk/sideload/release/app-sideload-release.apk"
-    # upload artifact to authpass server requires artifact_token.txt (encrypted)
-    # - name: upload artifact
-    #   if: ${{ steps.buildapk.outputs.outputfilename != null }}
-    #   run: ./authpass/_tools/upload-artifact.sh authpass/${{ steps.buildapk.outputs.outputpath }}
+        echo "::set-output name=outputpath::$apk_file"
     - uses: actions/upload-artifact@v4
       if: ${{ steps.buildapk.outputs.outputfilename != null }}
       with:
