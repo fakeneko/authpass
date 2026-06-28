@@ -68,14 +68,14 @@ $FLT pub get
 case "${flavor}" in
     ios)
         mkdir -p ~/.fastlane/spaceship
-        $FLT build ios -t lib/env/production.dart --release --build-number $buildnumber --config-only
+        $FLT build ios -t lib/env/development.dart --release --build-number $buildnumber --config-only
         cd ios
 #        sudo fastlane run update_fastlane
         bundle exec fastlane beta
     ;;
     macos)
         # on mac os there is right now no --build-number argument :-(
-        #flutter build macos -t lib/env/production.dart --release --build-number $buildnumber
+        #flutter build macos -t lib/env/development.dart --release --build-number $buildnumber
 #        sed -i .bak 's/^\(version: [0-9\\.]*\).*$/\1+'$buildnumber'/' pubspec.yaml
 #        cat pubspec.yaml | grep version | grep "+$buildnumber$"  || (
 #            echo "Buildnumber replacement was not successful." && exit 1
@@ -84,7 +84,7 @@ case "${flavor}" in
 #        sed -i .bak "s/_DEFAULT_VERSION = '.*'/_DEFAULT_VERSION = '$version'/" lib/env/_base.dart
 #        sed -i .bak "s/_DEFAULT_BUILD_NUMBER = [0-9]*/_DEFAULT_BUILD_NUMBER = $buildnumber/" lib/env/_base.dart
 #        $FLT pub get
-        $FLT build macos -v -t lib/env/production.dart --release --build-number $buildnumber --config-only
+        $FLT build macos -v -t lib/env/development.dart --release --build-number $buildnumber --config-only
         cd macos
         bundle exec fastlane beta
 #        echo
@@ -95,7 +95,7 @@ case "${flavor}" in
     ;;
     samsungapps | huawei | sideload | amazon)
         version=$(cat pubspec.yaml | grep version | cut -d' ' -f2 | cut -d'+' -f1)
-        $FLT build -v apk -t lib/env/production.dart --release --build-number $buildnumber --flavor ${flavor}
+        $FLT build -v apk -t lib/env/development.dart --release --build-number $buildnumber --flavor ${flavor}
         apkpath="build/app/outputs/apk/${flavor}/release"
         apk="${apkpath}/app-${flavor}-release.apk"
         outputfilename="authpass-${flavor}-${version}_${buildnumber}.apk"
@@ -106,7 +106,7 @@ case "${flavor}" in
         echo "::set-output name=outputpath::${outputpath}"
     ;;
     playstoredev)
-        $FLT build -v appbundle -t lib/env/production.dart --release --build-number $buildnumber --flavor playstoredev
+        $FLT build -v appbundle -t lib/env/development.dart --release --build-number $buildnumber --flavor playstoredev
         cd android
         bundle install
         echo "Check if we are in a beta branch ${GITHUB_REF}"
@@ -124,14 +124,14 @@ case "${flavor}" in
         fi
     ;;
     android | playstore)
-        $FLT build -v appbundle -t lib/env/production.dart --release --build-number $buildnumber --flavor playstore
+        $FLT build -v appbundle -t lib/env/development.dart --release --build-number $buildnumber --flavor playstore
         cd android
         bundle install
         bundle exec fastlane beta
     ;;
     linux)
         version=$(cat pubspec.yaml | grep version | cut -d' ' -f2 | cut -d'+' -f1)
-        $FLT build -v ${flavor} -t lib/env/production.dart --release --dart-define=AUTHPASS_VERSION=$version --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor}
+        $FLT build -v ${flavor} -t lib/env/development.dart --release --dart-define=AUTHPASS_VERSION=$version --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor}
         arch=x64
 
         outputfilename="authpass-${flavor}-${version}_${buildnumber}.tar.gz"
@@ -145,7 +145,7 @@ case "${flavor}" in
     ;;
     windows)
         version=$(cat pubspec.yaml | grep version | cut -d' ' -f2 | cut -d'+' -f1)
-        $FLT build -v ${flavor} -t lib/env/production.dart --release --dart-define=AUTHPASS_VERSION=$version --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor}
+        $FLT build -v ${flavor} -t lib/env/development.dart --release --dart-define=AUTHPASS_VERSION=$version --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor}
 
         _tools/windows/create_release.sh
 
@@ -162,7 +162,7 @@ case "${flavor}" in
     ;;
     windowsportable)
         version=$(cat pubspec.yaml | grep version | cut -d' ' -f2 | cut -d'+' -f1)
-        $FLT build -v windows -t lib/env/production.dart --release \
+        $FLT build -v windows -t lib/env/development.dart --release \
           --dart-define=AUTHPASS_VERSION=$version \
           --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber \
           --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor} \
@@ -176,7 +176,7 @@ case "${flavor}" in
     ;;
     msix)
         version=$(cat pubspec.yaml | grep version | cut -d' ' -f2 | cut -d'+' -f1)
-        $FLT build -v windows -t lib/env/production.dart --release \
+        $FLT build -v windows -t lib/env/development.dart --release \
             --dart-define=AUTHPASS_VERSION=$version \
             --dart-define=AUTHPASS_BUILD_NUMBER=$buildnumber \
             --dart-define=AUTHPASS_PACKAGE_NAME=design.codeux.authpass.${flavor} \
