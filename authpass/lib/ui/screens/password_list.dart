@@ -681,7 +681,7 @@ class _PasswordListContentState extends State<PasswordListContent>
     );
     final loc = AppLocalizations.of(context);
     return AppBar(
-      title: const Text('AuthPass'), // NON-NLS
+      title: Text(_currentBottomNavIndex == 0 ? 'AuthPass' : loc.totpListTitle), // NON-NLS
       actions: <Widget>[
         ...?!isDirty
             ? null
@@ -1170,11 +1170,7 @@ class _PasswordListContentState extends State<PasswordListContent>
       },
       child: Scaffold(
         appBar: _filteredEntries == null
-            ? AppBar(
-                title: Text(_currentBottomNavIndex == 0
-                    ? 'AuthPass'
-                    : loc.totpListTitle),
-              )
+            ? _buildDefaultAppBar(context)
             : _buildFilterAppBar(context),
         drawer: _currentBottomNavIndex == 0
             ? Drawer(
