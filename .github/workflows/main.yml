@@ -3,7 +3,6 @@ name: build android
 on:
   push:
     branches:
-      - main
       - stable
       - beta
     tags:
