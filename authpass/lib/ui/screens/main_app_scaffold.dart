@@ -118,6 +118,21 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
     super.dispose();
   }
 
+  /// Resets the right-hand detail pane back to [EmptyStateInitialRoute] and
+  /// clears the current selection.
+  ///
+  /// The directory-first browsing flow itself (folder directory as the initial
+  /// view, tapping a folder to show its entries, returning to the directory)
+  /// lives entirely in the embedded [PasswordList] / `PasswordListContent`,
+  /// shared with the phone layout — the tablet does not reimplement it and only
+  /// mirrors the selected entry in this detail pane.
+  void _clearSelection() {
+    _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    if (mounted) {
+      setState(() => _selectedEntry = null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -157,7 +172,7 @@ class _MainAppTabletScaffoldState extends State<MainAppTabletScaffold> {
                       push.then((dynamic value) {
                         _logger.finer('entry route was popped.');
                         if (entry == _selectedEntry && mounted) {
-                          setState(() => _selectedEntry = null);
+                          _clearSelection();
                         }
                       });
                       setState(() {

@@ -18,6 +18,9 @@ import 'package:authpass/ui/screens/entry_details.dart';
 import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/group_list.dart';
+// Prefixed alias to reach group_list's GroupFilter, which is shadowed by the
+// GroupFilter declared in this file.
+import 'package:authpass/ui/screens/group_list.dart' as group_list;
 import 'package:authpass/ui/screens/locked_screen.dart';
 import 'package:authpass/ui/screens/password_list_drawer.dart';
 import 'package:authpass/ui/screens/select_file_screen.dart';
@@ -481,10 +484,23 @@ class _PasswordListContentState extends State<PasswordListContent>
   bool? _dismissedAutofillSuggestion;
   int _currentBottomNavIndex = 0;
 
+  /// Whether the home view currently shows the folder/group directory
+  /// (initial view) instead of the entry list. Tapping a folder leaves this
+  /// mode; see [_openGroup].
+  bool _inDirectoryMode = true;
+
+  /// The folder currently opened from the directory view (content view), or
+  /// null when no single folder is open. Used for the content-view AppBar
+  /// title.
+  KdbxGroup? _browseGroup;
+
   @override
   void initState() {
     super.initState();
     _logger.finer('Initializing password list content.');
+    // The autofill selector must show entries directly for quick picking, so
+    // it never starts in the folder directory view (see [_directoryModeEnabled]).
+    _inDirectoryMode = !widget.isAutofillSelector;
     //    _isolateRunner.then((runner) => runner.run(PasswordListFilterIsolateRunner.init, widget.entries)).then((result) {
     //      _logger.finer('Initializd filter isolate $result');
     //    });
@@ -681,7 +697,15 @@ class _PasswordListContentState extends State<PasswordListContent>
     );
     final loc = AppLocalizations.of(context);
     return AppBar(
-      title: Text(_currentBottomNavIndex == 0 ? 'AuthPass' : loc.totpListTitle), // NON-NLS
+      leading: _directoryModeEnabled &&
+              _currentBottomNavIndex == 0 &&
+              !_inDirectoryMode
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: _backToDirectory,
+            )
+          : null,
+      title: Text(_appBarTitle(loc)),
       actions: <Widget>[
         ...?!isDirty
             ? null
@@ -746,7 +770,13 @@ class _PasswordListContentState extends State<PasswordListContent>
             return <PopupMenuEntry<VoidCallback>>[
               ...availableFilter.map(
                 (e) => CheckedPopupMenuItem<VoidCallback>(
-                  value: () => _groupFilterNotifier.value = e,
+                  value: () {
+                    setState(() {
+                      _inDirectoryMode = false;
+                      _browseGroup = null;
+                    });
+                    _groupFilterNotifier.value = e;
+                  },
                   checked: e == _groupFilter,
                   child: Text(e.name(loc)),
                 ),
@@ -760,10 +790,6 @@ class _PasswordListContentState extends State<PasswordListContent>
                     ),
                   );
                   if (groupFilter == null) {
-                    return;
-                  }
-                  if (groupFilter.isEmpty) {
-                    _groupFilterNotifier.value = GroupFilter.defaultGroupFilter;
                     return;
                   }
                   _createGroupFilter(loc, groupFilter);
@@ -1168,10 +1194,18 @@ class _PasswordListContentState extends State<PasswordListContent>
       actions: {
         SearchIntent: SearchAction(this),
       },
-      child: Scaffold(
-        appBar: _filteredEntries == null
-            ? _buildDefaultAppBar(context)
-            : _buildFilterAppBar(context),
+      child: PopScope(
+        canPop: _canPopHome,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            return;
+          }
+          _handleSystemBack();
+        },
+        child: Scaffold(
+          appBar: _filteredEntries == null
+              ? _buildDefaultAppBar(context)
+              : _buildFilterAppBar(context),
         drawer: _currentBottomNavIndex == 0
             ? Drawer(
                 child: PasswordListDrawer(
@@ -1187,7 +1221,9 @@ class _PasswordListContentState extends State<PasswordListContent>
           children: [
             ProgressOverlay(
               task: task,
-              child: _allEntries!.isEmpty
+              child: _shouldShowDirectory
+                  ? _buildDirectoryView(context)
+                  : _allEntries!.isEmpty
                   ? NoPasswordsEmptyView(
                       listPrefix: listPrefix,
                       onPrimaryButtonPressed: () {
@@ -1246,6 +1282,7 @@ class _PasswordListContentState extends State<PasswordListContent>
           ],
         ),
         floatingActionButton: _currentBottomNavIndex == 1 ||
+                _inDirectoryMode ||
                 _allEntries!.isEmpty ||
                 _filterQuery != null ||
                 _autofillMetadata != null
@@ -1322,10 +1359,47 @@ class _PasswordListContentState extends State<PasswordListContent>
           ],
         ),
       ),
+      ),
     );
   }
 
+  /// Builds the folder/group directory view (initial home view), reusing
+  /// [GroupListBuilder] so the directory matches the drawer's group list
+  /// (all files, including their groups and recycle bin).
+  Widget _buildDirectoryView(BuildContext context) {
+    return GroupListBuilder(
+      rootGroup: null,
+      builder: (context, groups) {
+        return GroupListFlatList(
+          groupFilter: group_list.GroupFilter(groups: groups),
+          groups: groups,
+          groupListMode: GroupListMode.browse,
+          onOpenGroup: _openGroup,
+        );
+      },
+    );
+  }
+
+  /// Called when a folder is tapped in the directory view. Leaves directory
+  /// mode and filters the entry list down to the tapped group, producing the
+  /// same result as selecting that group in the drawer (recursive, per
+  /// [GroupFilter.getEntries]). New entries created via the FloatingActionButton
+  /// then default to this group through the existing
+  /// `_groupFilter.groups.first.group` logic. An empty group shows the empty
+  /// state rather than all entries.
+  void _openGroup(KdbxGroup group) {
+    final loc = AppLocalizations.of(context);
+    _createGroupFilter(loc, {group});
+  }
+
   void _createGroupFilter(AppLocalizations loc, Set<KdbxGroup> groupFilter) {
+    // Selecting groups (via the drawer, the filter menu, or by opening a folder
+    // from the directory) shows the filtered entry list, so leave the directory
+    // view and remember the opened folder for the content-view title.
+    setState(() {
+      _inDirectoryMode = false;
+      _browseGroup = groupFilter.length == 1 ? groupFilter.first : null;
+    });
     if (groupFilter.isEmpty) {
       _groupFilterNotifier.value = GroupFilter.defaultGroupFilter;
       return;
@@ -1345,6 +1419,82 @@ class _PasswordListContentState extends State<PasswordListContent>
     );
     _filteredEntries = null;
     _filterTextEditingController.text = CharConstants.empty;
+  }
+
+  /// Returns from a folder content view to the folder directory view, resetting
+  /// the group filter and clearing any active search.
+  void _backToDirectory() {
+    setState(() {
+      _inDirectoryMode = true;
+      _browseGroup = null;
+      _filteredEntries = null;
+      _filterQuery = null;
+      _filterTextEditingController.text = CharConstants.empty;
+    });
+    _groupFilterNotifier.value = GroupFilter.defaultGroupFilter;
+  }
+
+  /// Whether the folder-directory browsing flow is available. It is disabled in
+  /// the autofill selector, where the user must pick an entry directly, so that
+  /// flow is unchanged from before the directory view existed.
+  bool get _directoryModeEnabled => !widget.isAutofillSelector;
+
+  /// Whether the directory view should currently be shown. An active search
+  /// ([_filteredEntries] != null) always shows the (search) entry list, so the
+  /// user returns to the directory only after leaving search.
+  bool get _shouldShowDirectory =>
+      _directoryModeEnabled && _inDirectoryMode && _filteredEntries == null;
+
+  /// Whether a system/back press should pop the route as usual. Returns false
+  /// while a folder content view or a search is active on the home tab, so the
+  /// back press is handled by [_handleSystemBack] instead.
+  bool get _canPopHome {
+    if (_currentBottomNavIndex != 0) {
+      return true;
+    }
+    if (_filteredEntries != null) {
+      return false;
+    }
+    if (!_directoryModeEnabled) {
+      return true;
+    }
+    return _inDirectoryMode;
+  }
+
+  void _handleSystemBack() {
+    if (_filteredEntries != null) {
+      _cancelFilter();
+      return;
+    }
+    if (_directoryModeEnabled && !_inDirectoryMode) {
+      _backToDirectory();
+    }
+  }
+
+  /// Display name for a group, mirroring the directory view's naming (root
+  /// groups show their database name).
+  String _groupDisplayName(KdbxGroup group, AppLocalizations loc) {
+    final name =
+        (group.parent == null
+                ? group.file.body.meta.databaseName.get()
+                : group.name.get())
+            ?.nullIfBlank();
+    return name ?? loc.unnamedGroupPlaceholder;
+  }
+
+  /// Title for the default app bar: the TOTP title on the TOTP tab, the current
+  /// folder (or filter) name while in a content view, or the app name while in
+  /// the directory view.
+  String _appBarTitle(AppLocalizations loc) {
+    if (_currentBottomNavIndex != 0) {
+      return loc.totpListTitle;
+    }
+    if (_directoryModeEnabled && !_inDirectoryMode) {
+      return _browseGroup != null
+          ? _groupDisplayName(_browseGroup!, loc)
+          : _groupFilter.name(loc);
+    }
+    return 'AuthPass'; // NON-NLS
   }
 
   List<PopupMenuItem<VoidCallback>>? _buildAuthPassCloudMenuItems(

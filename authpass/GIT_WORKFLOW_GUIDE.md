@@ -8,10 +8,24 @@
 
 | 分支 | 用途 | 触发器 |
 |------|------|--------|
-| `main` | 主开发分支 | 不自动触发构建 |
-| `windows-totp-list` | Windows 版本 | `windows**` 分支推送 |
-| `android-totp-list` | Android 版本 | `android**` 分支推送 |
-| `stable` / `beta` | 稳定/测试版本 | 推送时触发所有构建 |
+| `main` | 主开发分支 | 不自动触发构建（各 workflow 仅在 `pull_request: main` 时跑测试/分析） |
+| `windows-totp-list` | Windows 版本 | `windows.yaml` 监听 `windows**`，推送即触发 Windows 构建 ✅ |
+| `android-totp-list` | Android 版本 | ⚠️ 当前 `main.yml`（build android）**未监听 `android**`**，推送该分支不会触发 Android 构建，见下方「差异与待澄清项」 |
+| `stable` / `beta` | 稳定/测试版本 | 推送时触发所有平台构建（windows / linux / android / ios / web） |
+
+## 差异与待澄清项（2026-06-29 核对）
+
+按当前仓库 `.github/workflows/` 配置与远程分支核对，记录如下：
+
+- **分支存在性**：`main`、`windows-totp-list`、`android-totp-list` 在 `origin` 远程均存在，与手册一致。
+- **Windows 触发**：`windows.yaml` 触发分支为 `windows**` / `stable` / `beta`，推送 `windows-totp-list` 可自动触发 Windows 构建，与手册一致。
+- **Android 触发（差异）**：`main.yml`（`build android`）触发器为 `push: stable/beta`、`tags: v*`、`pull_request: main`，**不包含 `android**` 或 `android-totp-list`**。因此推送 `android-totp-list` 分支**不会**触发 Android 构建，与手册原描述不符。
+  - 待澄清：Android 构建应通过哪种方式触发？可选方案：
+    1. 在 `main.yml` 的 `on.push.branches` 增加 `'android**'`（与 Windows 对齐）；
+    2. 或改为通过推送 `stable`/`beta` 分支、打 `v*` tag 触发；
+    3. 或对 `android-totp-list` 发起指向 `main` 的 PR（仅 `pull_request: main` 时跑）。
+  - 在 CI 配置确认前，P004/P005/P006 中「推送 android-totp-list 即触发 Android 构建」的预期可能无法成立。
+- **main 不自动构建**：`analyze` / `unit_test` / `integration_test` / `driver_test` 仅在 `pull_request: main` 触发，无 `push: main`；其余构建 workflow 也未监听 `main` 推送，与手册「main 分支不自动触发」一致。
 
 ## 工作流步骤
 
@@ -76,8 +90,8 @@ git checkout main
 
 ### 方式一：推送代码到对应分支（自动触发）
 
-- 推送到 `windows-totp-list` → 触发 Windows 构建
-- 推送到 `android-totp-list` → 触发 Android 构建
+- 推送到 `windows-totp-list` → 触发 Windows 构建 ✅
+- 推送到 `android-totp-list` → ⚠️ 当前 CI 未监听 `android**`，**不会**触发 Android 构建（详见「差异与待澄清项」）
 
 ### 方式二：创建空提交触发（不修改代码）
 
