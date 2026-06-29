@@ -179,29 +179,25 @@ class _TotpListContentState extends State<TotpListContent> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(loc.totpListTitle),
-      ),
-      body: _totpEntries == null || _totpEntries!.isEmpty
-          ? Center(
-              child: Text(loc.totpListEmpty),
-            )
-          : ListView.builder(
-              itemCount: _totpEntries!.length,
-              itemBuilder: (context, index) {
-                final vm = _totpEntries![index];
-                return _TotpListTile(
-                  viewModel: vm,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      EntryDetailsScreen.route(entry: vm.entry),
-                    );
-                  },
-                );
-              },
-            ),
-    );
+    return _totpEntries == null || _totpEntries!.isEmpty
+        ? Center(
+            child: Text(loc.totpListEmpty),
+          )
+        : ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: _totpEntries!.length,
+            itemBuilder: (context, index) {
+              final vm = _totpEntries![index];
+              return _TotpListTile(
+                viewModel: vm,
+                onTap: () {
+                  Navigator.of(context).push(
+                    EntryDetailsScreen.route(entry: vm.entry),
+                  );
+                },
+              );
+            },
+          );
   }
 }
 
@@ -231,9 +227,9 @@ class TotpEntryViewModel {
     return _elapsed ?? 0;
   }
 
-  int get period {
+  int get remainingSeconds {
     _updateCode();
-    return _period ?? 30;
+    return _period! - _elapsed!;
   }
 
   void _updateCode() {
@@ -264,15 +260,26 @@ class _TotpListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
+    final remaining = viewModel.remainingSeconds;
+    final isUrgent = remaining <= 5;
+    final progressColor = isUrgent ? Colors.red : Colors.green;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: CircularPercentIndicator(
-          radius: 18.0,
-          lineWidth: 3,
+          radius: 20.0,
+          lineWidth: 4,
           percent: 1 - (viewModel.elapsed / viewModel.period.toDouble()),
           backgroundColor: Colors.black12,
-          progressColor: Theme.of(context).primaryColor,
+          progressColor: progressColor,
+          center: Text(
+            '$remaining',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: progressColor,
+            ),
+          ),
         ),
         title: Text(viewModel.label),
         subtitle: Text(
