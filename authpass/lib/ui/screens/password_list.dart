@@ -16,6 +16,7 @@ import 'package:authpass/ui/screens/cloud/cloud_auth.dart';
 import 'package:authpass/ui/screens/cloud/cloud_mailbox.dart';
 import 'package:authpass/ui/screens/entry_details.dart';
 import 'package:authpass/ui/screens/totp_list.dart';
+import 'package:authpass/ui/screens/totp_list.dart';
 import 'package:authpass/ui/screens/group_list.dart';
 import 'package:authpass/ui/screens/locked_screen.dart';
 import 'package:authpass/ui/screens/password_list_drawer.dart';
@@ -1169,74 +1170,87 @@ class _PasswordListContentState extends State<PasswordListContent>
       },
       child: Scaffold(
         appBar: _filteredEntries == null
-            ? _buildDefaultAppBar(context)
+            ? AppBar(
+                title: Text(_currentBottomNavIndex == 0
+                    ? 'AuthPass'
+                    : loc.totpListTitle),
+              )
             : _buildFilterAppBar(context),
-        drawer: Drawer(
-          child: PasswordListDrawer(
-            initialSelection: _groupFilter.groups.map((e) => e.group).toSet(),
-            selectionChanged: (Set<KdbxGroup> selection) {
-              _createGroupFilter(loc, selection);
-            },
-          ),
-        ),
-        body: ProgressOverlay(
-          task: task,
-          child: _allEntries!.isEmpty
-              ? NoPasswordsEmptyView(
-                  listPrefix: listPrefix,
-                  onPrimaryButtonPressed: () {
-                    final kdbxBloc = Provider.of<KdbxBloc>(
-                      context,
-                      listen: false,
-                    );
-                    final entry = kdbxBloc.createEntry();
-                    //                Navigator.of(context).push(EntryDetailsScreen.route(entry: entry));
-                    widget.onEntrySelected(
-                      context,
-                      entry,
-                      EntrySelectionType.activeOpen,
-                    );
+        drawer: _currentBottomNavIndex == 0
+            ? Drawer(
+                child: PasswordListDrawer(
+                  initialSelection: _groupFilter.groups.map((e) => e.group).toSet(),
+                  selectionChanged: (Set<KdbxGroup> selection) {
+                    _createGroupFilter(loc, selection);
                   },
-                )
-              : Scrollbar(
-                  child: ListView.builder(
-                    itemCount: entries!.length + 1,
-                    itemBuilder: (context, index) {
-                      // handle [listPrefix]
-                      if (index == 0) {
-                        if (listPrefix.isEmpty) {
-                          return const SizedBox();
-                        }
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: listPrefix,
-                        );
-                      }
-                      index--;
-
-                      final entry = entries[index];
-
-                      final openedFile = kdbxBloc.fileForKdbxFile(
-                        entry.entry.file,
-                      );
-                      final fileColor = openedFile.openedFile.color;
-                      //                _logger.finer('listview item. selectedEntry: ${widget.selectedEntry}');
-                      return PasswordEntryListTileWrapper(
-                        entry: entry,
-                        fileColor: fileColor,
-                        filterQuery: _filterQuery,
-                        selectedEntry: widget.selectedEntry,
-                        onEntrySelected:
-                            (KdbxEntry entry, EntrySelectionType type) {
-                              widget.onEntrySelected(context, entry, type);
-                            },
-                      );
-                    },
-                  ),
                 ),
+              )
+            : null,
+        body: IndexedStack(
+          index: _currentBottomNavIndex,
+          children: [
+            ProgressOverlay(
+              task: task,
+              child: _allEntries!.isEmpty
+                  ? NoPasswordsEmptyView(
+                      listPrefix: listPrefix,
+                      onPrimaryButtonPressed: () {
+                        final kdbxBloc = Provider.of<KdbxBloc>(
+                          context,
+                          listen: false,
+                        );
+                        final entry = kdbxBloc.createEntry();
+                        widget.onEntrySelected(
+                          context,
+                          entry,
+                          EntrySelectionType.activeOpen,
+                        );
+                      },
+                    )
+                  : Scrollbar(
+                      child: ListView.builder(
+                        itemCount: entries!.length + 1,
+                        itemBuilder: (context, index) {
+                          // handle [listPrefix]
+                          if (index == 0) {
+                            if (listPrefix.isEmpty) {
+                              return const SizedBox();
+                            }
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: listPrefix,
+                            );
+                          }
+                          index--;
+
+                          final entry = entries[index];
+
+                          final openedFile = kdbxBloc.fileForKdbxFile(
+                            entry.entry.file,
+                          );
+                          final fileColor = openedFile.openedFile.color;
+                          return PasswordEntryListTileWrapper(
+                            entry: entry,
+                            fileColor: fileColor,
+                            filterQuery: _filterQuery,
+                            selectedEntry: widget.selectedEntry,
+                            onEntrySelected:
+                                (KdbxEntry entry, EntrySelectionType type) {
+                                  widget.onEntrySelected(context, entry, type);
+                                },
+                          );
+                        },
+                      ),
+                    ),
+            ),
+            TotpListContent(
+              kdbxBloc: kdbxBloc,
+              openedKdbxFiles: widget.openedKdbxFiles,
+            ),
+          ],
         ),
-        floatingActionButton:
-            _allEntries!.isEmpty ||
+        floatingActionButton: _currentBottomNavIndex == 1 ||
+                _allEntries!.isEmpty ||
                 _filterQuery != null ||
                 _autofillMetadata != null
             ? null
@@ -1299,9 +1313,6 @@ class _PasswordListContentState extends State<PasswordListContent>
             setState(() {
               _currentBottomNavIndex = index;
             });
-            if (index == 1) {
-              Navigator.of(context).push(TotpListScreen.route());
-            }
           },
           items: [
             BottomNavigationBarItem(
