@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'android**'
-      - main
       - stable
       - beta
     tags:
