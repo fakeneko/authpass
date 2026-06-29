@@ -232,6 +232,11 @@ class TotpEntryViewModel {
     return _period! - _elapsed!;
   }
 
+  int get period {
+    _updateCode();
+    return _period ?? 30;
+  }
+
   void _updateCode() {
     final now = clock.now().millisecondsSinceEpoch;
     final secretBase32 = base32Encode(otpAuth.secret);
