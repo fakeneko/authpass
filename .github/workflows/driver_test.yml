@@ -3,7 +3,7 @@ name: Driver Tests
 on:
   push:
     branches:
-      - main
+      - stable
   pull_request:
     branches:
       - main
