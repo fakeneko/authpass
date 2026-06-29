@@ -243,6 +243,10 @@ enum GroupListMode {
   multiSelectForFilter,
   singleSelect,
   manage,
+
+  /// Tapping a whole row opens (browses into) the group instead of
+  /// toggling a checkbox / radio selection. Used by the home directory view.
+  browse,
 }
 
 extension on GroupListMode {
@@ -572,6 +576,10 @@ class _GroupListFlatContentState extends State<GroupListFlatContent> {
                 context,
               ).push(GroupEditScreen.route(group.group));
               break;
+            case GroupListMode.browse:
+              // Browsing is handled via [GroupListFlatList.onOpenGroup];
+              // selection state is not changed here.
+              break;
           }
           setState(() {});
         },
@@ -608,15 +616,20 @@ class GroupListFlatList extends StatelessWidget {
     required this.groupFilter,
     required this.groups,
     required this.groupListMode,
-    required this.onChanged,
-    required this.onChangedAll,
+    this.onChanged,
+    this.onChangedAll,
+    this.onOpenGroup,
   });
 
   final GroupFilter groupFilter;
   final List<_GroupViewModel>? groups;
   final GroupListMode groupListMode;
-  final void Function(_GroupViewModel group, bool selected) onChanged;
-  final void Function(bool selected) onChangedAll;
+  final void Function(_GroupViewModel group, bool selected)? onChanged;
+  final void Function(bool selected)? onChangedAll;
+
+  /// Called in [GroupListMode.browse] when a row is tapped, so the caller can
+  /// open (navigate into) the tapped group.
+  final void Function(KdbxGroup group)? onOpenGroup;
 
   bool get _allSelected => groupFilter.groupFilter.length == groups!.length;
 
@@ -638,7 +651,11 @@ class GroupListFlatList extends StatelessWidget {
             ),
             groupListMode: groupListMode,
             onChanged: (value) async {
-              onChanged(group, value);
+              if (groupListMode == GroupListMode.browse) {
+                onOpenGroup?.call(group.group);
+              } else {
+                onChanged?.call(group, value);
+              }
             },
             onLongPress: () async {
               final analytics = context.read<Analytics>();
@@ -789,10 +806,10 @@ class GroupListFlatList extends StatelessWidget {
         onChanged: (value) {
           if (value == null) {
             if (selected != null) {
-              onChanged(selected, false);
+              onChanged?.call(selected, false);
             }
           } else {
-            onChanged(value, true);
+            onChanged?.call(value, true);
           }
         },
         groupValue: selected,
@@ -818,7 +835,7 @@ class GroupListFlatList extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: LinkButton(
             onPressed: () {
-              onChangedAll(!_allSelected);
+              onChangedAll?.call(!_allSelected);
             },
             child: _allSelected
                 ? Text(loc.groupFilterDeselectAll)
@@ -982,10 +999,16 @@ class GroupListTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: onLongPress,
-            ),
+            if (groupListMode == GroupListMode.browse)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Icon(Icons.chevron_right),
+              )
+            else
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: onLongPress,
+              ),
           ],
         ),
       ),
@@ -1010,6 +1033,8 @@ class GroupListTile extends StatelessWidget {
           ),
         ];
       case GroupListMode.manage:
+        return [const SizedBox(width: 16)];
+      case GroupListMode.browse:
         return [const SizedBox(width: 16)];
     }
     // throw StateError('Invalid groupListMode $groupListMode');
