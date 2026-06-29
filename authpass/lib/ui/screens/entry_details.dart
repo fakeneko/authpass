@@ -630,7 +630,7 @@ class _EntryDetailsState extends State<EntryDetails>
                         ),
                         EntryMetaInfo(
                           label: loc.entryInfoGroup,
-                          value: vm.groupNames.join(' » '), // NON-NLS
+                          value: vm.groupDisplayPath,
                           onTap: () async {
                             await _showMoveToGroup(loc, vm.entry);
                           },

@@ -79,8 +79,36 @@ class EntryViewModel implements Comparable<EntryViewModel> {
   static final hasSchemaRegexp = RegExp(r'^https?://');
   static final hasNewline = RegExp('[\r\n]');
 
-  static List<String> _createGroupNames(KdbxGroup group) =>
-      group.breadcrumbs.map((e) => e.name.get()!).toList();
+  /// Builds the breadcrumb of group names for [group], from the topmost real
+  /// group down to [group] itself.
+  ///
+  /// The root group (whose [KdbxGroup.parent] is `null`) is the database
+  /// container itself (e.g. named `Database`), not a user-facing group, so it
+  /// is excluded from the breadcrumb. An entry sitting directly in the root
+  /// therefore yields an empty list, which both the list tile and the detail
+  /// view can consume consistently as "no enclosing group".
+  ///
+  /// Group names that are `null` or blank are rendered as empty strings instead
+  /// of throwing, keeping the breadcrumb depth intact without crashing.
+  static List<String> _createGroupNames(KdbxGroup group) => group.breadcrumbs
+      .where((e) => e.parent != null)
+      .map((e) => e.name.get()?.nullIfBlank() ?? CharConstants.empty)
+      .toList();
+
+  /// Display string for this entry's enclosing group, shared by the password
+  /// list tile and the entry detail view so both treat the root group the same
+  /// way. [groupNames] excludes the root container (see [_createGroupNames]); an
+  /// entry sitting directly in the root therefore falls back to the database /
+  /// root group name instead of rendering nothing, so it reads as "in the root
+  /// group" rather than as missing data.
+  String get groupDisplayPath => groupNames.isEmpty
+      ? _rootGroupName
+      : groupNames.join(CharConstants.chevronRight);
+
+  String get _rootGroupName =>
+      entry.file.body.meta.databaseName.get()?.nullIfBlank() ??
+      entry.file.body.rootGroup.name.get()?.nullIfBlank() ??
+      CharConstants.empty;
 
   String? _normalizeUrl() {
     final url = entry.getString(websiteKey)?.getText()?.trim();
@@ -1922,14 +1950,11 @@ class PasswordEntryTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ...?vm.groupNames.length < 2
+                  ...?vm.groupDisplayPath.isEmpty
                       ? null
                       : [
                           Text(
-                            nonNls('📁️  ') +
-                                vm.groupNames
-                                    .sublist(1)
-                                    .join(CharConstants.chevronRight),
+                            nonNls('📁️  ') + vm.groupDisplayPath,
                             overflow: TextOverflow.fade,
                             maxLines: 1,
                             textAlign: TextAlign.right,
