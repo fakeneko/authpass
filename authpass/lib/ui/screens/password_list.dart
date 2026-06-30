@@ -1409,29 +1409,23 @@ class _PasswordListContentState extends State<PasswordListContent>
       stream: Rx.merge(streams).map((x) => true),
       builder: (context, snapshot) {
         final rootEntries = <EntryViewModel>[];
-        final groups = <_GroupViewModel>[];
+        final groups = <({KdbxGroup group, KdbxOpenedFile file, bool isRecycleBin})>[];
         for (final file in kdbxBloc.openedFiles.values) {
           final recycleBin = file.kdbxFile.recycleBin;
           for (final entry in file.kdbxFile.body.rootGroup.entries) {
             rootEntries.add(EntryViewModel(entry, file.kdbxFile));
           }
           for (final group in file.kdbxFile.body.rootGroup.groups) {
-            if (group != recycleBin) {
-              groups.add(_GroupViewModel(
-                kdbxBloc,
-                file,
-                group,
-                0,
-                isRecycleBin: false,
-                inRecycleBin: false,
-              ));
+            final isRecycleBin = group == recycleBin;
+            if (!isRecycleBin) {
+              groups.add((group: group, file: file, isRecycleBin: false));
             }
           }
         }
         rootEntries.sort((a, b) => a.compareTo(b));
         groups.sort((a, b) => compareStringsIgnoreCase(
-          a.first.nameOrNull,
-          b.first.nameOrNull,
+          _groupDisplayName(a.group, loc),
+          _groupDisplayName(b.group, loc),
         ));
 
         return Scrollbar(
@@ -1439,7 +1433,7 @@ class _PasswordListContentState extends State<PasswordListContent>
             itemCount: rootEntries.length + groups.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
-                return _buildDirectoryListHeader(loc);
+                return const SizedBox();
               }
               index--;
               if (index < rootEntries.length) {
@@ -1457,13 +1451,11 @@ class _PasswordListContentState extends State<PasswordListContent>
               }
               index -= rootEntries.length;
               final group = groups[index];
-              return GroupListTile(
-                group: group,
-                isSelected: false,
-                isSelectedInherited: false,
-                groupListMode: GroupListMode.browse,
-                onChanged: (_) => _openGroup(group.group),
-                onLongPress: () {},
+              return _buildDirectoryGroupTile(
+                context,
+                group.group,
+                group.file,
+                loc,
               );
             },
           ),
@@ -1472,8 +1464,22 @@ class _PasswordListContentState extends State<PasswordListContent>
     );
   }
 
-  Widget _buildDirectoryListHeader(AppLocalizations loc) {
-    return const SizedBox();
+  Widget _buildDirectoryGroupTile(
+    BuildContext context,
+    KdbxGroup group,
+    KdbxOpenedFile file,
+    AppLocalizations loc,
+  ) {
+    final icon = group.file.body.meta.customIcons[group.uuid]?.image ??
+        group.file.body.meta.defaultIcon?.image ??
+        group.file.icon;
+    final displayName = _groupDisplayName(group, loc);
+    return ListTile(
+      leading: icon?.widget(size: 24) ?? const Icon(Icons.folder),
+      title: Text(displayName),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _openGroup(group),
+    );
   }
 
   /// Called when a folder is tapped in the directory view. Leaves directory
