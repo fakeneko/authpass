@@ -1477,6 +1477,13 @@ class _PasswordListContentState extends State<PasswordListContent>
   }
 
   /// Called when a folder is tapped in the directory view. Leaves directory
+  /// mode and filters the entry list down to the tapped group, producing the
+  /// same result as selecting that group in the drawer (recursive, per
+  /// [GroupFilter.getEntries]). New entries created via the FloatingActionButton
+  /// then default to this group through the existing
+  /// `_groupFilter.groups.first.group` logic. An empty group shows the empty
+  /// state rather than all entries.
+  void _openGroup(KdbxGroup group) {
     final loc = AppLocalizations.of(context);
     _createGroupFilter(loc, {group});
   }
