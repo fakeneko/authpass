@@ -1465,7 +1465,9 @@ class _PasswordListContentState extends State<PasswordListContent>
   ) {
     final displayName = _groupDisplayName(group, loc);
     return ListTile(
-      leading: group.icon.widget(size: 24),
+      leading: group.icon.get() != null
+          ? FaIcon(PredefinedIcons.iconForGroup(group.icon.get()!), size: 24)
+          : const Icon(Icons.folder, size: 24),
       title: Text(displayName),
       trailing: const Icon(Icons.chevron_right),
       onTap: () => _openGroup(group),
