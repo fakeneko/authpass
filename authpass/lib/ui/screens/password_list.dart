@@ -430,10 +430,14 @@ class GroupFilter {
         if (showRecycleBin) {
           return recycleBin?.entries ?? [];
         } else {
-          return f.body.rootGroup
-              .getAllGroups()
-              .where((g) => g != recycleBin)
-              .expand((e) => e.entries);
+          // Include rootGroup entries plus all child group entries (excluding recycleBin).
+          return [
+            ...f.body.rootGroup.entries,
+            ...f.body.rootGroup
+                .getAllGroups()
+                .where((g) => g != recycleBin)
+                .expand((e) => e.entries),
+          ];
         }
       }
     });
