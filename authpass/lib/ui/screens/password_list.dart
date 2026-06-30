@@ -1395,31 +1395,88 @@ class _PasswordListContentState extends State<PasswordListContent>
     );
   }
 
-  /// Builds the folder/group directory view (initial home view), reusing
-  /// [GroupListBuilder] so the directory matches the drawer's group list
-  /// (all files, including their groups and recycle bin).
+  /// Builds the folder/group directory view (initial home view). It shows
+  /// entries that live directly in the root group (i.e. no parent folder),
+  /// followed by the first-level subgroups of every open file. Tapping a group
+  /// opens that group's content view.
   Widget _buildDirectoryView(BuildContext context) {
-    return GroupListBuilder(
-      rootGroup: null,
-      builder: (context, groups) {
-        return GroupListFlatList(
-          groupFilter: group_list.GroupFilter(groups: groups),
-          groups: groups,
-          groupListMode: GroupListMode.browse,
-          onOpenGroup: _openGroup,
+    final kdbxBloc = Provider.of<KdbxBloc>(context);
+    final loc = AppLocalizations.of(context);
+    final streams = kdbxBloc.openedFilesKdbx.map(
+      (file) => file.dirtyObjectsChanged,
+    );
+    return StreamBuilder<bool>(
+      stream: Rx.merge(streams).map((x) => true),
+      builder: (context, snapshot) {
+        final rootEntries = <EntryViewModel>[];
+        final groups = <_GroupViewModel>[];
+        for (final file in kdbxBloc.openedFiles.values) {
+          final recycleBin = file.kdbxFile.recycleBin;
+          for (final entry in file.kdbxFile.body.rootGroup.entries) {
+            rootEntries.add(EntryViewModel(entry, file.kdbxFile));
+          }
+          for (final group in file.kdbxFile.body.rootGroup.groups) {
+            if (group != recycleBin) {
+              groups.add(_GroupViewModel(
+                kdbxBloc,
+                file,
+                group,
+                0,
+                isRecycleBin: false,
+                inRecycleBin: false,
+              ));
+            }
+          }
+        }
+        rootEntries.sort((a, b) => a.compareTo(b));
+        groups.sort((a, b) => compareStringsIgnoreCase(
+          a.first.nameOrNull,
+          b.first.nameOrNull,
+        ));
+
+        return Scrollbar(
+          child: ListView.builder(
+            itemCount: rootEntries.length + groups.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _buildDirectoryListHeader(loc);
+              }
+              index--;
+              if (index < rootEntries.length) {
+                final entry = rootEntries[index];
+                final openedFile = kdbxBloc.fileForKdbxFile(entry.entry.file);
+                return PasswordEntryListTileWrapper(
+                  entry: entry,
+                  fileColor: openedFile.openedFile.color,
+                  filterQuery: null,
+                  selectedEntry: widget.selectedEntry,
+                  onEntrySelected: (entry, type) {
+                    widget.onEntrySelected(context, entry, type);
+                  },
+                );
+              }
+              index -= rootEntries.length;
+              final group = groups[index];
+              return GroupListTile(
+                group: group,
+                isSelected: false,
+                isSelectedInherited: false,
+                groupListMode: GroupListMode.browse,
+                onChanged: (_) => _openGroup(group.group),
+                onLongPress: () {},
+              );
+            },
+          ),
         );
       },
     );
   }
 
+  Widget _buildDirectoryListHeader(AppLocalizations loc) {
+    return const SizedBox();
+  }
+
   /// Called when a folder is tapped in the directory view. Leaves directory
-  /// mode and filters the entry list down to the tapped group, producing the
-  /// same result as selecting that group in the drawer (recursive, per
-  /// [GroupFilter.getEntries]). New entries created via the FloatingActionButton
-  /// then default to this group through the existing
-  /// `_groupFilter.groups.first.group` logic. An empty group shows the empty
-  /// state rather than all entries.
-  void _openGroup(KdbxGroup group) {
     final loc = AppLocalizations.of(context);
     _createGroupFilter(loc, {group});
   }
