@@ -1409,19 +1409,12 @@ class _PasswordListContentState extends State<PasswordListContent>
       stream: Rx.merge(streams).map((x) => true),
       builder: (context, snapshot) {
         final rootEntries = <EntryViewModel>[];
-        final groups = <({KdbxGroup group, KdbxOpenedFile file, bool isRecycleBin})>[];
-        for (final file in kdbxBloc.openedFiles.values) {
-          final recycleBin = file.kdbxFile.recycleBin;
-          for (final entry in file.kdbxFile.body.rootGroup.entries) {
-            rootEntries.add(EntryViewModel(entry, file.kdbxFile));
-          }
-          for (final group in file.kdbxFile.body.rootGroup.groups) {
-            final isRecycleBin = group == recycleBin;
-            if (!isRecycleBin) {
-              groups.add((group: group, file: file, isRecycleBin: false));
-            }
-          }
-        }
+        final groups = <_DirectoryGroup>[
+          for (final file in kdbxBloc.openedFiles.values)
+            for (final group in file.kdbxFile.body.rootGroup.groups)
+              if (group != file.kdbxFile.recycleBin)
+                _DirectoryGroup(group: group, file: file),
+        ];
         rootEntries.sort((a, b) => a.compareTo(b));
         groups.sort((a, b) => compareStringsIgnoreCase(
           _groupDisplayName(a.group, loc),
@@ -2178,4 +2171,11 @@ extension on AutofillMetadata {
             (element) => element != 'android', // NON-NLS
           )
           .firstOrNull;
+}
+
+class _DirectoryGroup {
+  const _DirectoryGroup({required this.group, required this.file});
+
+  final KdbxGroup group;
+  final KdbxOpenedFile file;
 }
