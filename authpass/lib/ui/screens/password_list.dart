@@ -1408,7 +1408,11 @@ class _PasswordListContentState extends State<PasswordListContent>
     return StreamBuilder<bool>(
       stream: Rx.merge(streams).map((x) => true),
       builder: (context, snapshot) {
-        final rootEntries = <EntryViewModel>[];
+        final rootEntries = <EntryViewModel>[
+          for (final file in kdbxBloc.openedFiles.values)
+            for (final entry in file.kdbxFile.body.rootGroup.entries)
+              EntryViewModel(entry, kdbxBloc),
+        ];
         final groups = <_DirectoryGroup>[
           for (final file in kdbxBloc.openedFiles.values)
             for (final group in file.kdbxFile.body.rootGroup.groups)
