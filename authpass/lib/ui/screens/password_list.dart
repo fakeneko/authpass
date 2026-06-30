@@ -1463,12 +1463,9 @@ class _PasswordListContentState extends State<PasswordListContent>
     KdbxGroup group,
     AppLocalizations loc,
   ) {
-    final icon = group.file.body.meta.customIcons[group.uuid]?.image ??
-        group.file.body.meta.defaultIcon?.image ??
-        group.file.icon;
     final displayName = _groupDisplayName(group, loc);
     return ListTile(
-      leading: icon?.widget(size: 24) ?? const Icon(Icons.folder),
+      leading: group.icon.widget(size: 24),
       title: Text(displayName),
       trailing: const Icon(Icons.chevron_right),
       onTap: () => _openGroup(group),
