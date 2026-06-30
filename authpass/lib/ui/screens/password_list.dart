@@ -1408,21 +1408,23 @@ class _PasswordListContentState extends State<PasswordListContent>
     return StreamBuilder<bool>(
       stream: Rx.merge(streams).map((x) => true),
       builder: (context, snapshot) {
-        final rootEntries = <EntryViewModel>[
-          for (final file in kdbxBloc.openedFiles.values)
-            for (final entry in file.kdbxFile.body.rootGroup.entries)
-              EntryViewModel(entry, kdbxBloc),
-        ];
-        final groups = <_DirectoryGroup>[
-          for (final file in kdbxBloc.openedFiles.values)
-            for (final group in file.kdbxFile.body.rootGroup.groups)
-              if (group != file.kdbxFile.recycleBin)
-                _DirectoryGroup(group: group, file: file),
-        ];
+        final rootEntries = <EntryViewModel>[];
+        final groups = <KdbxGroup>[];
+        for (final file in kdbxBloc.openedFiles.values) {
+          final recycleBin = file.kdbxFile.recycleBin;
+          for (final entry in file.kdbxFile.body.rootGroup.entries) {
+            rootEntries.add(EntryViewModel(entry, kdbxBloc));
+          }
+          for (final group in file.kdbxFile.body.rootGroup.groups) {
+            if (group != recycleBin) {
+              groups.add(group);
+            }
+          }
+        }
         rootEntries.sort((a, b) => a.compareTo(b));
         groups.sort((a, b) => compareStringsIgnoreCase(
-          _groupDisplayName(a.group, loc),
-          _groupDisplayName(b.group, loc),
+          _groupDisplayName(a, loc),
+          _groupDisplayName(b, loc),
         ));
 
         return Scrollbar(
@@ -1448,12 +1450,7 @@ class _PasswordListContentState extends State<PasswordListContent>
               }
               index -= rootEntries.length;
               final group = groups[index];
-              return _buildDirectoryGroupTile(
-                context,
-                group.group,
-                group.file,
-                loc,
-              );
+              return _buildDirectoryGroupTile(context, group, loc);
             },
           ),
         );
@@ -1464,7 +1461,6 @@ class _PasswordListContentState extends State<PasswordListContent>
   Widget _buildDirectoryGroupTile(
     BuildContext context,
     KdbxGroup group,
-    KdbxOpenedFile file,
     AppLocalizations loc,
   ) {
     final icon = group.file.body.meta.customIcons[group.uuid]?.image ??
